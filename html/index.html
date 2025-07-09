@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mi Portafolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 30px;
+      background-color: #fffefb;
+      color: #3a3a3a;
+    }
+
+    header {
+      text-align: center;
+      padding-bottom: 30px;
+    }
+
+    h1 {
+      font-weight: 700;
+      font-size: 2rem;
+      letter-spacing: 0.15em;
+      color: #6b4c3b;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .descripcion {
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 1rem;
+      color: #7e7e7e;
+      font-weight: 400;
+      line-height: 1.6;
+      letter-spacing: 0.03em;
+    }
+
+    .galeria {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+      max-width: 1040px;
+      margin: 20px auto;
+    }
+
+    .galeria-item {
+      position: relative;
+      background: #ffffff;
+      border-radius: 0;
+      overflow: hidden;
+      box-shadow: 0 6px 15px rgba(107, 76, 59, 0.12);
+      cursor: pointer;
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .galeria-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+
+    .galeria-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 14px 30px rgba(107, 76, 59, 0.22);
+    }
+
+    .galeria-item:hover img {
+      transform: scale(1.07);
+    }
+
+    /* Fondo semi-transparente en descripción dentro de galeria-item */
+    .galeria-item h3,
+    .galeria-item p {
+      position: relative;
+      z-index: 2;
+      margin: 0 20px;
+      padding: 6px 10px;
+      background-color: rgba(255, 255, 255, 0.75); /* blanco semitransparente */
+      border-radius: 4px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .galeria-item h3 {
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #6b4c3b;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .galeria-item p {
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #7e7e7e;
+      line-height: 1.3;
+    }
+
+    /* Lightbox */
+    #lightbox {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #lightbox img {
+      max-width: 90%;
+      max-height: 80%;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(107, 76, 59, 0.3);
+      pointer-events: none;
+    }
+
+    /* Flechas */
+    .flecha {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 3rem;
+      color: #6b4c3b;
+      background-color: rgba(255,255,255,0.85);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      line-height: 46px;
+      text-align: center;
+      font-weight: 700;
+      user-select: none;
+      cursor: pointer;
+      z-index: 10000;
+      transition: background-color 0.3s ease;
+    }
+
+    .flecha:hover {
+      background-color: #6b4c3b;
+      color: white;
+    }
+
+    #flecha-izq {
+      left: 20px;
+    }
+
+    #flecha-der {
+      right: 20px;
+    }
+
+    /* Botón cerrar */
+    #btn-cerrar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 2.2rem;
+      color: #6b4c3b;
+      background-color: rgba(255,255,255,0.85);
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      line-height: 40px;
+      text-align: center;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      z-index: 10001;
+      transition: background-color 0.3s ease;
+    }
+
+    #btn-cerrar:hover {
+      background-color: #6b4c3b;
+      color: white;
+    }
+
+    .carrusel-container {
+      max-width: 1040px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .carrusel-container h2 {
+      font-size: 1.3rem;
+      color: #6b4c3b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .carrusel {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .carrusel img {
+      flex: 0 0 auto;
+      width: 260px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 0;
+      scroll-snap-align: center;
+      transition: transform 0.3s ease;
+      margin: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .carrusel img:hover {
+      transform: scale(1.05);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 15px;
+      background-color: #fffefb;
+      margin-top: 40px;
+      font-weight: 500;
+      color: #7e7e7e;
+      font-family: 'Montserrat', sans-serif;
+      letter-spacing: 0.04em;
+      font-size: 1rem;
+    }
+
+    .divisor {
+      height: 1px;
+      background-color: #e0dcd6;
+      margin: 30px auto;
+      max-width: 80%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DMW.dsgn</h1>
+    <p class="descripcion">Hola, soy Daniela Moreno. Estudié Administración de Empresas y luego me especialicé en diseño. Me apasiona transformar ideas en soluciones funcionales y con propósito, con enfoque en la experiencia del usuario. Aquí comparto una selección de algunos de mis trabajos más representativos.</p>
+  </header>
+
+  <hr class="divisor" />
+
+  <div class="galeria">
+    <!-- Trabajo 1: 3 imágenes -->
+    <div class="galeria-item" onclick="abrirLightboxTrabajo(this)" onmouseenter="iniciarCambio(this)" onmouseleave="detenerCambio(this)"
+      data-imagenes='["trabajo1.jpg", "trabajo1a.jpg", "trabajo1b.jpg"]'>
+      <img src="trabajo1.jpg" alt="GROUNDED" />
+      <h3>GROUNDED</h3>
+      <p>Lámpara de mesa inspirada en la “biophilia” y la conexión con la tierra. El centro es iluminado por el aro exterior, creando un juego de sombras según el ángulo de giro. Madrid, 2025.</p>
+    </div>
+
+    <!-- Trabajo 2: 2 imágenes -->
+    <div class="galeria-item" onclick="abrirLightboxTrabajo(this)" onmouseenter="iniciarCambio(this)" onmouseleave="detenerCambio(this)"
+      data-imagenes='["trabajo2.jpg", "trabajo2a.jpg"]'>
+      <img src="trabajo2.jpg" alt="CAMALEÓN" />
+      <h3>CAMALEÓN</h3>
+      <p>Módulos intercambiables. Apila y crea todas las combinaciones que puedas imaginar. Más que un producto; es una experiencia. Madrid, 2025.</p>
+    </div>
+
+    <!-- Trabajo 3: 3 imágenes -->
+    <div class="galeria-item" onclick="abrirLightboxTrabajo(this)" onmouseenter="iniciarCambio(this)" onmouseleave="detenerCambio(this)"
+      data-imagenes='["trabajo3.jpg", "trabajo3a.jpg", "trabajo3b.jpg"]'>
+      <img src="trabajo3.jpg" alt="CONSONANCIA" />
+      <h3>CONSONANCIA</h3>
+      <p>Los aros envolventes simbolizan la conexión y armonía.</p>
+    </div>
+
+    <!-- Trabajo 4: 2 imágenes -->
+    <div class="galeria-item" onclick="abrirLightboxTrabajo(this)" onmouseenter="iniciarCambio(this)" onmouseleave="detenerCambio(this)"
+      data-imagenes='["trabajo4.jpg", "trabajo4a.jpg"]'>
+      <img src="trabajo4.jpg" alt="DOPPIO" />
+      <h3>DOPPIO</h3>
+      <p>Descubre la elegancia en los momentos más simples. Su diseño moderno y minimalista eleva la experiencia de tomar café, ya sea en casa, en la oficina o en cualquier lugar. Madrid, 2024.</p>
+    </div>
+
+    <!-- Trabajo 5: 2 imágenes -->
+    <div class="galeria-item" onclick="abrirLightboxTrabajo(this)" onmouseenter="iniciarCambio(this)" onmouseleave="detenerCambio(this)"
+      data-imagenes='["trabajo5.jpg", "trabajo5a.jpg"]'>
+      <img src="trabajo5.jpg" alt="ONDA II" />
+      <h3>ONDA II</h3>
+      <p>Su estructura curvada le da dinamismo, ligereza y durabilidad. Además de ser funcional, aporta un toque moderno al espacio.</p>
+    </div>
+  </div>
+
+  <hr class="divisor" />
+
+  <div class="carrusel-container">
+    <h2>DIBUJO</h2>
+    <div class="carrusel" id="carruselDibujo">
+      <img src="carousel1.jpg" alt="Dibujo 1" onclick="abrirLightboxCarrusel(this)" />
+      <img src="carousel2.jpg" alt="Dibujo 2" onclick="abrirLightboxCarrusel(this)" />
+      <img src="carousel3.jpg" alt="Dibujo 3" onclick="abrirLightboxCarrusel(this)" />
+      <img src="carousel4.jpg" alt="Dibujo 4" onclick="abrirLightboxCarrusel(this)" />
+      <img src="carousel5.jpg" alt="Dibujo 5" onclick="abrirLightboxCarrusel(this)" />
+    </div>
+  </div>
+
+  <div id="lightbox" onclick="cerrarLightbox(event)">
+    <span id="btn-cerrar" onclick="cerrarLightbox(event)">&times;</span>
+    <span id="flecha-izq" class="flecha" onclick="cambiarImagen(-1)">&#10094;</span>
+    <img id="imagenAmpliada" src="" alt="Imagen ampliada" />
+    <span id="flecha-der" class="flecha" onclick="cambiarImagen(1)">&#10095;</span>
+  </div>
+
+  <!-- Sección de contacto -->
+  <section style="max-width: 600px; margin: 40px auto; text-align: center; font-family: 'Montserrat', sans-serif; color: #6b4c3b;">
+    <h2 style="text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; font-size: 1.4rem; margin-bottom: 15px;">Contáctame:</h2>
+    <p style="font-size: 1rem; font-weight: 500; margin: 6px 0;">danielamw97@gmail.com</p>
+    <p style="font-size: 1rem; font-weight: 500; margin: 6px 0;">+34 630 657 613</p>
+  </section>
+
+  <script>
+    // Variables para lightbox trabajos
+    let imagenesTrabajo = [];
+    let indiceImagenTrabajo = 0;
+    let intervaloCambio = null;
+
+    // Variable para controlar tipo de lightbox (trabajo o dibujo)
+    let esLightboxTrabajo = false;
+
+    // Función para mostrar lightbox de trabajos
+    function abrirLightboxTrabajo(elemento) {
+      imagenesTrabajo = JSON.parse(elemento.getAttribute("data-imagenes"));
+      indiceImagenTrabajo = 0;
+      esLightboxTrabajo = true;
+      document.getElementById("imagenAmpliada").src = imagenesTrabajo[indiceImagenTrabajo];
+      mostrarLightbox(true, true);
+    }
+
+    // Función para mostrar lightbox de dibujos (solo imagen clickeada, sin flechas)
+    function abrirLightboxCarrusel(img) {
+      imagenesTrabajo = [img.src];
+      indiceImagenTrabajo = 0;
+      esLightboxTrabajo = false;
+      document.getElementById("imagenAmpliada").src = imagenesTrabajo[indiceImagenTrabajo];
+      mostrarLightbox(true, false);
+    }
+
+    // Mostrar/Ocultar lightbox
+    function mostrarLightbox(mostrar, mostrarFlechas = true) {
+      const lightbox = document.getElementById("lightbox");
+      lightbox.style.display = mostrar ? "flex" : "none";
+      document.getElementById("flecha-izq").style.display = mostrarFlechas ? "block" : "none";
+      document.getElementById("flecha-der").style.display = mostrarFlechas ? "block" : "none";
+      document.getElementById("btn-cerrar").style.display = mostrar ? "block" : "none";
+    }
+
+    // Navegar imágenes en lightbox trabajos
+    function cambiarImagen(direccion) {
+      if (!esLightboxTrabajo) return; // No navegar si es dibujo
+      indiceImagenTrabajo += direccion;
+      if (indiceImagenTrabajo < 0) {
+        indiceImagenTrabajo = imagenesTrabajo.length - 1;
+      } else if (indiceImagenTrabajo >= imagenesTrabajo.length) {
+        indiceImagenTrabajo = 0;
+      }
+      document.getElementById("imagenAmpliada").src = imagenesTrabajo[indiceImagenTrabajo];
+    }
+
+    // Cerrar lightbox al click fuera imagen o en la X
+    function cerrarLightbox(event) {
+      const targetId = event.target.id;
+      if (targetId === "imagenAmpliada" || targetId === "flecha-izq" || targetId === "flecha-der" || targetId === "btn-cerrar") {
+        return;
+      }
+      mostrarLightbox(false);
+      detenerCambio();
+    }
+
+    // Funciones para cambio automático en hover en trabajos (mostrar demás imágenes)
+    function iniciarCambio(elemento) {
+      if (intervaloCambio) clearInterval(intervaloCambio);
+      const imgs = JSON.parse(elemento.getAttribute("data-imagenes"));
+      let idx = 0;
+      const imgElemento = elemento.querySelector("img");
+      intervaloCambio = setInterval(() => {
+        idx = (idx + 1) % imgs.length;
+        imgElemento.src = imgs[idx];
+      }, 1200);
+    }
+
+    function detenerCambio() {
+      if (intervaloCambio) {
+        clearInterval(intervaloCambio);
+        intervaloCambio = null;
+        // Restaurar imagen original
+        document.querySelectorAll(".galeria-item").forEach(item => {
+          const imgs = JSON.parse(item.getAttribute("data-imagenes"));
+          if (!item.querySelector("img").src.includes(imgs[0])) {
+            item.querySelector("img").src = imgs[0];
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>
